@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Alert, Button, AsyncStorage, Modal, ActivityIndicator} from 'react-native';
 import { Camera, Permissions, FileSystem } from 'expo';
-// import RNFetchBlob from 'react-native-fetch-blob';
-// import RNfs from 'react-native-fs';
 import fire from "../fire";
 import Loading from "../components/Loading";
 
@@ -82,13 +80,26 @@ export class PhotoScreen extends Component {
 
     /* create new photo item */
     var thumbnailURL = null;
-
-    this.newPhotos.forEach( async (_photoObj, _index) => {
+    console.log("after var creation");
+    for(let _index = 0 ; _index < this.newPhotos.length ; _index++) {
+      console.log("inside promise");
+      _photoObj = this.newPhotos[_index];
       const newPhotoKey = (await fire.DB.ref("photos").push()).key;
+      console.log("url: " + _photoObj.uri);
 
-      let response = await fetch(_photoObj.uri);
-      // HTTP header is sent, HTTP response header is received, but the payload is not received yet.
-      let blob = await response.blob();
+      const blob = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          resolve(xhr.response);
+        };
+        xhr.onerror = function(e) {
+          console.log(e);
+          reject(new TypeError('Network request failed'));
+        };
+        xhr.responseType = 'blob';
+        xhr.open('GET', _photoObj.uri, true);
+        xhr.send(null);
+      });
 
       const ref = fire.Storage.ref().child(`${id}/${this.getFommatedDate()}/${newDocumentKey}/[${_index+1}]${newPhotoKey}.jpg`);
       await ref.put(blob);
@@ -104,7 +115,8 @@ export class PhotoScreen extends Component {
         image_url: imageURL,
         index: _index
       };
-    });
+      console.log("end promise");
+    }
 
     const newDocumentObj = {
       id: newDocumentKey,
