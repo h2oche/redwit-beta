@@ -43,6 +43,7 @@ export class CompleteScreen extends Component {
     return (
       <View style={styles.container}>
         <Modal
+          onRequestClose={()=>{}}
           transparent={false}
           visible={this.state.showLoadingModal}>
           <Loading loadingText="연구노트 시점을 등록중입니다.."/>

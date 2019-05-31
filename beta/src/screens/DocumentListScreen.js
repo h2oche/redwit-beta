@@ -57,9 +57,10 @@ export class DocumentListScreen extends Component {
     return (
       <View style={styles.container}>
         <Modal
+          onRequestClose={()=>{}}
           transparent={false}
           visible={this.state.showLoadingModal}>
-          <Loading loadingText="연구노트 데이터블 불러오고 있습니다.."/>
+          <Loading loadingText="연구노트 데이터를 불러오고 있습니다.."/>
         </Modal>
 
         <ScrollView
